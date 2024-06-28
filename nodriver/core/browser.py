@@ -642,7 +642,7 @@ class CookieJar:
             ]
         return cookies
 
-    async def set_all(self, cookies: List[cdp.network.CookieParam]):
+    async def set_all(self, cookies: List[cdp.network.Cookie]):
         """
         set cookies
 
@@ -659,7 +659,8 @@ class CookieJar:
             break
         else:
             connection = self._browser.connection
-        cookies = await connection.send(cdp.storage.get_cookies())
+        cookies.extend(await connection.send(cdp.storage.get_cookies()))
+        await connection.send(cdp.storage.clear_cookies())
         await connection.send(cdp.storage.set_cookies(cookies))
 
     async def save(self, file: PathLike = ".session.dat", pattern: str = ".*"):
